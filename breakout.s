@@ -7,12 +7,55 @@ _start:
 	call ClearScreen
 	
 	
-	movi r2, 79
-	movi r3, 59
+	movi r2, 5
+	movi r3, 5
 	movi r4, 0xAA
-	call SetPixel
+	movi r5, 10
+	movi r6, 5
+	call FillRect
 	
 	break
+
+# Fill a rectangle on the screen
+# r2: X position
+# r3: Y position
+# r4: Colour
+# r5: Width
+# r6: Height
+FillRect:
+	subi  sp, sp, 24
+	stw   ra, 20(sp)
+	stw   r2, 16(sp)
+	stw   r3, 12(sp)
+	stw   r5, 8(sp)
+	stw   r6, 4(sp)
+	stw   r7, 0(sp)
+
+	add   r5, r2, r5 # Set to end x
+	add   r6, r3, r6 # Set to end y
+	mov   r7, r2     # Save x position
+
+rect_vert_loop:
+rect_horz_loop:
+	call SetPixel
+	addi  r2, r2, 1 # Increment X
+	blt   r2, r5, rect_horz_loop
+# END HORZ LOOP
+	mov   r2, r7 # Return to initial x position
+	addi  r3, r3, 1 # Increment Y
+	blt   r3, r6, rect_vert_loop
+# END VERT LOOP
+
+	
+	ldw   ra, 20(sp)
+	ldw   r2, 16(sp)
+	ldw   r3, 12(sp)
+	ldw   r5, 8(sp)
+	ldw   r6, 4(sp)
+	ldw   r7, 0(sp)
+	addi  sp, sp, 24
+	ret
+
 
 # Set a pixel on the screen
 # r2: X position, 0<=r2<=89
