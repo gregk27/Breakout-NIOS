@@ -6,11 +6,41 @@
 .equ VGA,     0x08000000
 .equ VGA_MAX, 0x08001DCC
 .equ CYCLES_PER_MS, 5000 # Calibrated through trial and error
+.equ JTAG_DATA, 0x10001000
+.equ JTAG_CTRL, 0x10001004
 
 _start:
 	movi  sp, 0x7FFC
 	
 GAME_LOOP:
+
+	# Poll inputs
+input_loop:
+	movia r2, JTAG_DATA
+	ldwio r3, 0(r2)
+	# Get number of available bytes
+	andi  r2, r3, 0x8000
+	# If there's data, read and loop
+	beq   r2, r0, end_input
+	andi  r2, r3, 0x00FF
+	
+	movi  r4, 'a'
+	bne   r2, r4, input_not_left
+	ldw   r4, PADDLE_X(r0)
+	subi  r4, r4, 1
+	stw   r4, PADDLE_X(r0)
+input_not_left:
+
+	movi  r4, 'd'
+	bne   r2, r4, input_not_right
+	ldw   r4, PADDLE_X(r0)
+	addi  r4, r4, 1
+	stw   r4, PADDLE_X(r0)
+input_not_right:
+
+	br input_loop
+end_input:
+
 	call ClearScreen
 	
 	ldw  r2, PADDLE_X(r0)
