@@ -1,6 +1,11 @@
 .text
 .org 0x0000
 .global _start
+
+
+.equ VGA,     0x08000000
+.equ VGA_MAX, 0x08001DCC
+
 _start:
 	movi  sp, 0x7FFC
 	
@@ -69,7 +74,7 @@ SetPixel:
 	muli  r3, r3, 0x80 # Get Y offset
 	add   r2, r2, r3   # Shift by Y offset
 
-	ldw   r3, VGA(r0)  # Get VGA buffer start
+	movia r3, VGA	   # Get VGA buffer start
 	add   r2, r2, r3   # Shift into VGA buffer
 
 	stbio r4, 0(r2)    # Set byte
@@ -85,8 +90,8 @@ ClearScreen:
 	stw   r2, 4(sp) # Current pointer
 	stw   r3, 0(sp) # Max address
 	
-	ldw   r2, VGA(r0)
-	ldw   r3, VGA_MAX(r0)
+	movia r2, VGA
+	movia r3, VGA_MAX
 LOOP:
 	stwio r0, 0(r2)
 	
@@ -100,5 +105,3 @@ LOOP:
 	
 	
 .org 0x1000
-VGA: .word     0x08000000
-VGA_MAX: .word 0x08001DCC
