@@ -5,6 +5,7 @@
 
 .equ VGA,     0x08000000
 .equ VGA_MAX, 0x08001DCC
+.equ CYCLES_PER_MS, 5000 # Calibrated through trial and error
 
 _start:
 	movi  sp, 0x7FFC
@@ -99,17 +100,33 @@ ClearScreen:
 	
 	movia r2, VGA
 	movia r3, VGA_MAX
-LOOP:
+cls_loop:
 	stwio r0, 0(r2)
 	
 	addi  r2, r2, 4
-	blt   r2, r3, LOOP
+	blt   r2, r3, cls_loop
 
 	ldw   r2, 4(sp) 
 	ldw   r3, 0(sp) 
 	addi  sp, sp, 8
 	ret
+
+# Sleep for a specified amount of time
+# r2: Time to sleep in milliseconds
+Sleep:
+	subi  sp, sp, 4
+	stw   r3, 0(sp) # Temp used to store conversion factor
 	
+	movia r3, CYCLES_PER_MS
+	mul   r3, r2, r3
+sleep_loop:
+	subi  r3, r3, 1
+	bne   r3, r0, sleep_loop
+	
+	ldw   r3, 0(sp)
+	addi  sp, sp, 4
+	ret
+
 	
 .org 0x1000
 PADDLE_WIDTH: 	.word 20
