@@ -18,7 +18,14 @@ _start:
 	movi r5, 10
 	movi r6, 5
 	call FillRect
-	
+
+	ldw  r2, PADDLE_X(r0)
+	ldw  r3, PADDLE_Y(r0)
+	movi r4, 0xFF
+	ldw  r5, PADDLE_WIDTH(r0)
+	ldw  r6, PADDLE_HEIGHT(r0)
+	call FillRect
+
 	break
 
 # Fill a rectangle on the screen
@@ -105,3 +112,7 @@ LOOP:
 	
 	
 .org 0x1000
+PADDLE_WIDTH: 	.word 20
+PADDLE_HEIGHT:	.word 4
+PADDLE_X:		.word 0
+PADDLE_Y:		.word 0
