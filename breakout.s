@@ -10,22 +10,19 @@
 _start:
 	movi  sp, 0x7FFC
 	
+GAME_LOOP:
 	call ClearScreen
 	
-	
-	movi r2, 5
-	movi r3, 5
-	movi r4, 0xAA
-	movi r5, 10
-	movi r6, 5
-	call FillRect
-
 	ldw  r2, PADDLE_X(r0)
 	ldw  r3, PADDLE_Y(r0)
 	movi r4, 0xFF
 	ldw  r5, PADDLE_WIDTH(r0)
 	ldw  r6, PADDLE_HEIGHT(r0)
 	call FillRect
+
+	movi r2, 50
+	call Sleep
+	br GAME_LOOP
 
 	break
 
@@ -129,7 +126,7 @@ sleep_loop:
 
 	
 .org 0x1000
-PADDLE_WIDTH: 	.word 20
-PADDLE_HEIGHT:	.word 4
+PADDLE_WIDTH: 	.word 10
+PADDLE_HEIGHT:	.word 2
 PADDLE_X:		.word 0
-PADDLE_Y:		.word 0
+PADDLE_Y:		.word 57
